@@ -12,51 +12,51 @@
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/auth",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/config",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/crypto/pkcs11key",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/crypto/pkcs12",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/crypto/pkcs7",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/csr",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/errors",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/helpers",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/info",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/log",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/ocsp",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/cloudflare/cfssl/signer",
-			"Rev": "6f428f654df58d23d1321bcbe3598f6b8a02167a"
+			"Rev": "4c1fa5c9cc330b38bef3edd1dedfa9e8044e8499"
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",
