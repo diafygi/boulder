@@ -71,7 +71,12 @@
               {
                 "ID": "1.3.6.1.4.1.44947.1.1.1",
                 "type": "id-qt-cps",
-                "qualifier": "http://cps.root-x1.letsencrypt.org"
+                "qualifier": "http://cps.letsencrypt.org"
+              },
+              {
+                "ID": "1.3.6.1.4.1.44947.1.1.1",
+                "type": "id-qt-unotice",
+                "qualifier": "This Certificate may only be relied upon by Relying Parties and only in accordance with the Certificate Policy found at https://letsencrypt.org/documents/"
               }
             ],
             "expiry": "8760h",
