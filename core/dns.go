@@ -57,9 +57,8 @@ func (dnsResolver *DNSResolver) ExchangeOne(m *dns.Msg) (rsp *dns.Msg, rtt time.
 	return dnsResolver.DNSClient.Exchange(m, chosenServer)
 }
 
-// LookupTXT uses a DNSSEC-enabled query to find all TXT records associated with
-// the provided hostname. If the query fails due to DNSSEC, error will be
-// set to ErrorDNSSEC.
+// LookupTXT sends a DNS query to find all TXT records associated with
+// the provided hostname.
 func (dnsResolver *DNSResolver) LookupTXT(hostname string) ([]string, time.Duration, error) {
 	var txt []string
 
@@ -88,9 +87,8 @@ func (dnsResolver *DNSResolver) LookupTXT(hostname string) ([]string, time.Durat
 	return txt, rtt, err
 }
 
-// LookupCNAME uses a DNSSEC-enabled query to  records for domain and returns either
-// the target, "", or a if the query fails due to DNSSEC, error will be set to
-// ErrorDNSSEC.
+// LookupCNAME sends a DNS query to find a CNAME record associated domain and returns the
+// record target.
 func (dnsResolver *DNSResolver) LookupCNAME(domain string) (string, error) {
 	m := new(dns.Msg)
 	m.SetQuestion(dns.Fqdn(domain), dns.TypeCNAME)
@@ -114,9 +112,9 @@ func (dnsResolver *DNSResolver) LookupCNAME(domain string) (string, error) {
 	return "", nil
 }
 
-// LookupCAA uses a DNSSEC-enabled query to find all CAA records associated with
-// the provided hostname. If the query fails due to DNSSEC, error will be
-// set to ErrorDNSSEC.
+// LookupCAA sends a DNS query to find all CAA records associated with
+// the provided hostname. If the response code from the resolver is SERVFAIL
+// an empty slice of CAA records is returned.
 func (dnsResolver *DNSResolver) LookupCAA(domain string, alias bool) ([]*dns.CAA, error) {
 	if alias {
 		// Check if there is a CNAME record for domain
@@ -141,18 +139,16 @@ func (dnsResolver *DNSResolver) LookupCAA(domain string, alias bool) ([]*dns.CAA
 	var CAAs []*dns.CAA
 	// XXX: On resolver validation failure, or other server failures, return empty
 	//      set and no error.
-	if r.Rcode == dns.RcodeServerFailure {
-		return CAAs, nil
-	}
-
-	for _, answer := range r.Answer {
-		if answer.Header().Rrtype == dns.TypeCAA {
-			caaR, ok := answer.(*dns.CAA)
-			if !ok {
-				err = errors.New("Badly formatted record")
-				return nil, err
+	if r.Rcode != dns.RcodeServerFailure {
+		for _, answer := range r.Answer {
+			if answer.Header().Rrtype == dns.TypeCAA {
+				caaR, ok := answer.(*dns.CAA)
+				if !ok {
+					err = errors.New("Badly formatted record")
+					return nil, err
+				}
+				CAAs = append(CAAs, caaR)
 			}
-			CAAs = append(CAAs, caaR)
 		}
 	}
 
