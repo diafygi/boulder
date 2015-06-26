@@ -173,7 +173,7 @@ func TestSimpleHttp(t *testing.T) {
 	chall := core.Challenge{Path: "test", Token: expectedToken}
 
 	invalidChall, err := va.validateSimpleHTTP(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "Server's not up yet; expected refusal. Where did we connect?")
@@ -187,7 +187,7 @@ func TestSimpleHttp(t *testing.T) {
 	<-waitChan
 
 	finChall, err := va.validateSimpleHTTP(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, finChall.Status, core.StatusValid)
 		test.AssertNotError(t, err, chall.Path)
@@ -195,7 +195,7 @@ func TestSimpleHttp(t *testing.T) {
 
 	tls := false
 	chall.TLS = &tls
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		finChall, err = va.validateSimpleHTTP(ident, chall)
 		test.AssertEquals(t, finChall.Status, core.StatusValid)
@@ -206,7 +206,7 @@ func TestSimpleHttp(t *testing.T) {
 	chall.TLS = &tls
 	chall.Path = path404
 	invalidChall, err = va.validateSimpleHTTP(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "Should have found a 404 for the challenge.")
@@ -215,7 +215,7 @@ func TestSimpleHttp(t *testing.T) {
 
 	chall.Path = pathWrongToken
 	invalidChall, err = va.validateSimpleHTTP(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "The path should have given us the wrong token.")
@@ -224,7 +224,7 @@ func TestSimpleHttp(t *testing.T) {
 
 	chall.Path = ""
 	invalidChall, err = va.validateSimpleHTTP(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "Empty paths shouldn't work either.")
@@ -233,7 +233,7 @@ func TestSimpleHttp(t *testing.T) {
 
 	chall.Path = "validish"
 	invalidChall, err = va.validateSimpleHTTP(core.AcmeIdentifier{Type: core.IdentifierType("ip"), Value: "127.0.0.1"}, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "IdentifierType IP shouldn't have worked.")
@@ -243,7 +243,7 @@ func TestSimpleHttp(t *testing.T) {
 	va.TestMode = false
 	chall.Path = "alsoValidish"
 	invalidChall, err = va.validateSimpleHTTP(core.AcmeIdentifier{Type: core.IdentifierDNS, Value: "always.invalid"}, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "Domain name is invalid.")
@@ -253,7 +253,7 @@ func TestSimpleHttp(t *testing.T) {
 
 	chall.Path = "%"
 	invalidChall, err = va.validateSimpleHTTP(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "Path doesn't consist of URL-safe characters.")
@@ -263,7 +263,7 @@ func TestSimpleHttp(t *testing.T) {
 	chall.Path = "wait-long"
 	started := time.Now()
 	invalidChall, err = va.validateSimpleHTTP(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		took := time.Since(started)
 		// Check that the HTTP connection times out after 5 seconds and doesn't block for 10 seconds
@@ -284,7 +284,7 @@ func TestDvsni(t *testing.T) {
 	chall := core.Challenge{R: ba, S: ba}
 
 	invalidChall, err := va.validateDvsni(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "Server's not up yet; expected refusal. Where did we connect?")
@@ -298,14 +298,14 @@ func TestDvsni(t *testing.T) {
 	<-waitChan
 
 	finChall, err := va.validateDvsni(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, finChall.Status, core.StatusValid)
 		test.AssertNotError(t, err, "")
 	}
 
 	invalidChall, err = va.validateDvsni(core.AcmeIdentifier{Type: core.IdentifierType("ip"), Value: "127.0.0.1"}, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "IdentifierType IP shouldn't have worked.")
@@ -314,7 +314,7 @@ func TestDvsni(t *testing.T) {
 
 	va.TestMode = false
 	invalidChall, err = va.validateDvsni(core.AcmeIdentifier{Type: core.IdentifierDNS, Value: "always.invalid"}, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "Domain name is invalid.")
@@ -324,7 +324,7 @@ func TestDvsni(t *testing.T) {
 	va.TestMode = true
 	chall.R = ba[5:]
 	invalidChall, err = va.validateDvsni(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "R Should be illegal Base64")
@@ -334,7 +334,7 @@ func TestDvsni(t *testing.T) {
 	chall.R = ba
 	chall.S = "!@#"
 	invalidChall, err = va.validateDvsni(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "S Should be illegal Base64")
@@ -345,7 +345,7 @@ func TestDvsni(t *testing.T) {
 	chall.Nonce = "wait-long"
 	started := time.Now()
 	invalidChall, err = va.validateDvsni(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		took := time.Since(started)
 		// Check that the HTTP connection times out after 5 seconds and doesn't block for 10 seconds
@@ -372,7 +372,7 @@ func TestTLSError(t *testing.T) {
 	<-waitChan
 
 	invalidChall, err := va.validateDvsni(ident, chall)
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || (err != nil && !strings.HasSuffix(err.Error(), "DNS query timed out")) {
 		test.AssertEquals(t, invalidChall.Status, core.StatusInvalid)
 		test.AssertError(t, err, "What cert was used?")
@@ -445,7 +445,7 @@ func TestValidateDvsni(t *testing.T) {
 	}
 	va.validate(authz, 0)
 
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if mockRA.lastAuthz.Challenges[0].Error == nil || (mockRA.lastAuthz.Challenges[0].Error != nil && !strings.HasSuffix(mockRA.lastAuthz.Challenges[0].Error.Detail, "DNS query timed out")) {
 		test.AssertEquals(t, core.StatusValid, mockRA.lastAuthz.Challenges[0].Status)
 	}
@@ -482,7 +482,7 @@ func TestValidateDvsniNotSane(t *testing.T) {
 	}
 	va.validate(authz, 0)
 
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if mockRA.lastAuthz.Challenges[0].Error == nil || (mockRA.lastAuthz.Challenges[0].Error != nil && !strings.HasSuffix(mockRA.lastAuthz.Challenges[0].Error.Detail, "DNS query timed out")) {
 		test.AssertEquals(t, core.StatusInvalid, mockRA.lastAuthz.Challenges[0].Status)
 	}
@@ -558,7 +558,7 @@ func TestCAAChecking(t *testing.T) {
 	va.DNSResolver = core.NewDNSResolver(time.Second*5, []string{"8.8.8.8:53"})
 	for _, caaTest := range tests {
 		present, valid, err := va.CheckCAARecords(core.AcmeIdentifier{Type: "dns", Value: caaTest.Domain})
-		// XXX: Until #401 is resolved ignore DNS timeouts
+		// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 		if err != nil && err.Error() == "read udp 8.8.8.8:53: i/o timeout" {
 			continue
 		}
@@ -569,7 +569,7 @@ func TestCAAChecking(t *testing.T) {
 	}
 
 	present, valid, err := va.CheckCAARecords(core.AcmeIdentifier{Type: "dns", Value: "dnssec-failed.org"})
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if err == nil || err != nil && err.Error() != "read udp 8.8.8.8:53: i/o timeout" {
 		test.AssertError(t, err, "dnssec-failed.org")
 		test.Assert(t, !present, "Present should be false")
@@ -593,7 +593,7 @@ func TestDNSValidationFailure(t *testing.T) {
 	}
 	va.validate(authz, 0)
 
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if mockRA.lastAuthz.Challenges[0].Error == nil || (mockRA.lastAuthz.Challenges[0].Error != nil && !strings.HasSuffix(mockRA.lastAuthz.Challenges[0].Error.Detail, "DNS query timed out")) {
 		t.Logf("Resulting Authz: %+v", authz)
 		test.AssertNotNil(t, mockRA.lastAuthz, "Should have gotten an authorization")
@@ -624,7 +624,7 @@ func TestDNSValidationInvalid(t *testing.T) {
 
 	va.validate(authz, 0)
 
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if mockRA.lastAuthz.Challenges[0].Error == nil || (mockRA.lastAuthz.Challenges[0].Error != nil && !strings.HasSuffix(mockRA.lastAuthz.Challenges[0].Error.Detail, "DNS query timed out")) {
 		test.AssertNotNil(t, mockRA.lastAuthz, "Should have gotten an authorization")
 		test.Assert(t, authz.Challenges[0].Status == core.StatusInvalid, "Should be invalid.")
@@ -691,11 +691,11 @@ func TestDNSValidationBadDNSSEC(t *testing.T) {
 	}
 	va.validate(authz, 0)
 
-	// XXX: Until #401 is resolved ignore DNS timeouts
+	// TODO(Issue #401): Until #401 is resolved ignore DNS timeouts from non-local resolver
 	if mockRA.lastAuthz.Challenges[0].Error == nil || (mockRA.lastAuthz.Challenges[0].Error != nil && !strings.HasSuffix(mockRA.lastAuthz.Challenges[0].Error.Detail, "DNS query timed out")) {
 		test.AssertNotNil(t, mockRA.lastAuthz, "Should have gotten an authorization")
 		test.Assert(t, authz.Challenges[0].Status == core.StatusInvalid, "Should be invalid.")
-		test.AssertEquals(t, authz.Challenges[0].Error.Type, core.ServerInternalProblem)
+		test.AssertEquals(t, authz.Challenges[0].Error.Type, core.ConnectionProblem)
 	}
 }
 
@@ -716,7 +716,7 @@ func TestDNSValidationNoServer(t *testing.T) {
 
 	test.AssertNotNil(t, mockRA.lastAuthz, "Should have gotten an authorization")
 	test.Assert(t, authz.Challenges[0].Status == core.StatusInvalid, "Should be invalid.")
-	test.AssertEquals(t, authz.Challenges[0].Error.Type, core.ServerInternalProblem)
+	test.AssertEquals(t, authz.Challenges[0].Error.Type, core.ConnectionProblem)
 }
 
 // TestDNSValidationLive is an integration test, depending on
