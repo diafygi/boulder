@@ -21,30 +21,78 @@ TESTDIRS="analysis \
           # cmd
           # Godeps
 
-run() {
-  echo "$*"
-  if $*; then
-    echo "success: $*"
-  else
-    FAILURE=1
-    echo "failure: $*"
+if [ "${TRAVIS}" == "true" ] ; then
+  npm install github-pr-status
+fi
+
+# We need to know, for github-pr-status, what the triggering commit is.
+# Assume first it's the travis commit (for builds of master), unless we're
+# a PR, when it's actually the first parent.
+TRIGGER_COMMIT=${TRAVIS_COMMIT}
+if [ "${TRAVIS_PULL_REQUEST}" != "false" ] ; then
+  TRIGGER_COMMIT=$(git rev-list --parents -n 1 HEAD | cut -d ' ' -f 1)
+fi
+
+start_context() {
+  CONTEXT="$1"
+  echo "Starting [${CONTEXT}]"
+}
+
+end_context() {
+  CONTEXT=""
+}
+
+update_status() {
+  echo "Update ${CONTEXT} Status: $*"
+  if [ "${TRAVIS}" == "true" ] && [ "x${CONTEXT}" != "x" ] ; then
+    node node_modules/github-pr-status/github-pr-status.js \
+      --authfile "$(pwd)/test/github-secret.json" --sha "${TRIGGER_COMMIT}" \
+      --user "letsencrypt" --repo "boulder" --context "${CONTEXT}" $*
   fi
 }
 
+run() {
+  echo "$*"
+  if $*; then
+    update_status --state success
+    echo "success: $*"
+  else
+    FAILURE=1
+    update_status --state failure
+    echo "failure: $*"
+  fi
+}
 
 # Path for installed go package binaries. If yours is different, override with
 # GOBIN=/my/path/to/bin ./test.sh
 GOBIN=${GOBIN:-$HOME/gopath/bin}
 
-# Ask vet to check in on things
+#
+# Run Go Vet, a static analysis tool
+#
+
+start_context vet
 run go vet -x ./...
 
+#
+# Run Go Lint, another static analysis tool
+#
+
+start_context golint
 [ -e $GOBIN/golint ] && run $GOBIN/golint ./...
+
+#
+# Unit Tests. These do not receive a context or status updates,
+# as they are reflected in our eventual exit code.
+#
 
 # Ensure SQLite is installed so we don't recompile it each time
 go install ./Godeps/_workspace/src/github.com/mattn/go-sqlite3
 
 if [ "${TRAVIS}" == "true" ] ; then
+  # Clear Status context
+  end_context
+
   # Run each test by itself for Travis, so we can get coverage
   for dir in ${TESTDIRS}; do
     run go test -tags pkcs11 -covermode=count -coverprofile=${dir}.coverprofile ./${dir}/
@@ -73,6 +121,14 @@ if [ ${FAILURE} != 0 ]; then
   exit ${FAILURE}
 fi
 
+#
+# Integration tests
+#
+
+# Set context to integration, and force a pending state
+start_context integration
+update_status --state pending
+
 if [ -z "$LETSENCRYPT_PATH" ]; then
   LETSENCRYPT_PATH=$(mktemp -d -t leXXXX)
 
@@ -94,10 +150,35 @@ fi
 source $LETSENCRYPT_PATH/venv/bin/activate
 export LETSENCRYPT_PATH
 
-run python test/amqp-integration-test.py
+python test/amqp-integration-test.py
+case $? in
+  0) # Success
+    update_status --state success
+    ;;
+  1) # Python client failed, but Node client didn't, which does
+     # not constitute failure
+    update_status --state success --description "Python integration failed."
+    ;;
+  2) # Node client failed
+    update_status --state failure
+    FAILURE=1
+    ;;
+  *) # Error occurred
+    update_status --state error
+    FAILURE=1
+    ;;
+esac
 
+#
+# Ensure all files are formatted per the `go fmt` tool
+#
+start_context fmt
 unformatted=$(find . -name "*.go" -not -path "./Godeps/*" -print | xargs -n1  gofmt -l)
-if [ "x${unformatted}" != "x" ] ; then
+if [ "x${unformatted}" == "x" ] ; then
+  update_status --state success
+else
+  update_status --state failure --description "${unformatted}"
+
   echo "Unformatted files found; setting failure state."
   echo "Please run 'go fmt' on each of these files and amend your commit to continue."
   FAILURE=1
